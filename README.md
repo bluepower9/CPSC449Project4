@@ -2,8 +2,8 @@
 
 ### Group Members:
 ##### Fenil Ketan Bhimani
-##### Parth Sharma
-##### Rakesh Singh
+##### Charlie Taylor
+##### Brent Pfefferle
 ##### Jarrod Leong
 
 ## **Initializing Database & Start Service:**
