@@ -7,7 +7,7 @@ from api.util.util import _get_db as _getdb
 from api.util.Classes import Guess, Game, User
 from quart_schema import validate_request, validate_headers
 import logging
-
+from worker import worker
 
 app_create = Blueprint('app_create', __name__)
 logger = logging.getLogger('games')
@@ -148,10 +148,12 @@ async def make_guess(data:Guess, headers:User):
         result['misplaced'] = m_letters
     elif valid and correct:
         result['correct_guess'] = correct
-    
+
+    worker(result) # worker function (worker.py)
+
     return result
 
-
+    
     
 
 
