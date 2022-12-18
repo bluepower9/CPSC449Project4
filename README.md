@@ -15,6 +15,7 @@
 - navigate to bottom of file and add the command `*/10 * * * * run-one rq requeue --all --queue default` to retry failed jobs every 10 minutes
 - save the file and exit
 - you can check if it saved with the command `crontab -l`
+*cron job was not running properly on Jarrod Leong's system but worked on Brent Pfefferle's system so command should be working*
 ##### navigate to project directory
 ##### to setup file structures for litefs database replication, run `python3 setup.py`  *if setup.py fails, manually delete the folder /database/dbs* 
 ###### *Make sure you have redis installed and it's not running.  you can check with the command `pgrep redis`*
