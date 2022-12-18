@@ -6,13 +6,20 @@
 ##### Brent Pfefferle
 ##### Jarrod Leong
 
-## **Initializing Database & Start Service:**
+## **Initializing Database, Cron Service & Start Project:**
 ##### copy 'wordleauth' into your nginx directory (/etc/nginx/sites-enabled/)
 ##### restart nginx `sudo service nginx restart`
+##### setup the Cron service to retry failed jobs
+- install run-one `sudo apt install run-one`
+- open terminal and type `crontab -e` and then select you choice of editor
+- navigate to bottom of file and add the command `*/10 * * * * run-one rq requeue --all --queue default` to retry failed jobs every 10 minutes
+- save the file and exit
+- you can check if it saved with the command `crontab -l`
 ##### navigate to project directory
 ##### to setup file structures for litefs database replication, run `python3 setup.py`  *if setup.py fails, manually delete the folder /database/dbs* 
 ###### *Make sure you have redis installed and it's not running.  you can check with the command `pgrep redis`*
 ##### run `foreman start` before populating datbases
+##### *the leaderboard service will try and register with the game service before starting.  It may take some seconds to register and start the service.*
 ##### setup the databases by running `python3 setupDB.py`  *use `setupDB.py -p` to populate the database.  Note it resets the redis db as well*
 ###### *if the project fails to start, delete the dbs folder and run setup again. Check again that redis is not running.  Litefs is included but if the replication services are failing, you may need to redownload Litefs and add it into /src/database/ and try again.*
 
@@ -38,6 +45,9 @@
 
 ### **List a Specific Game in Progress**
 ##### `http GET http://tuffix-vm/game/{game_id} user-id:<user-id> username:<username> -a <username>:<password>`
+
+### **Register service to webhook**
+##### `http POST http://tuffix-vm/game/register callback=<url>`
 
 ### **Get Leaderboard**
 ##### `http GET http://tuffix-vm/leaderboard`
