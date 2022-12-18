@@ -23,6 +23,7 @@ app.config.from_file(f'./config/config.toml', toml.load)
 
 callback = socket.getfqdn('http://' + 'localhost'+ ':' + os.environ['PORT'] + '/leaderboard/update')
 
+#register function runs until registered to webhook.  Does not start service until successfully registered.
 asyncio.run(register_webhook(app.config['WEBHOOK']['URL'], callback))
 
 

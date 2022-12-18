@@ -155,12 +155,14 @@ async def make_guess(data:Guess, headers:User):
     if finished:
         score = guesses_rem + 1 if correct else 0
         redisdb = _get_redis()
-        urls = list(redisdb.smembers('webhook_callback'))
-        print(urls)
-        que = Queue(connection=redisdb)
-        for url in urls:
-            que.enqueue(httpx.post, url, json={'username':username, 'score': guesses_rem+1})
 
+        #gets all urls from the redis set
+        urls = list(redisdb.smembers('webhook_callback'))
+        que = Queue(connection=redisdb)
+        
+        #queues a job for each registered url
+        for url in urls:
+            que.enqueue(httpx.post, url, json={'username':username, 'score': score})
 
     return result
 
@@ -174,11 +176,12 @@ async def register_client(data: WebhookReg):
     try:
         db = _get_redis()
         data = dataclasses.asdict(data)
-
+        
+        #adds to a set to prevent duplicate callback urls
         db.sadd('webhook_callback', data['callback'])
     except Exception as e:
         print(e)
-        return {'registered': False}
+        return {'registered': False}, 500
 
     return {'registered': True, 'callback': data['callback']}, 200
 

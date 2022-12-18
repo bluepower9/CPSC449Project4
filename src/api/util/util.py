@@ -26,7 +26,7 @@ def _read_jsonfile(fname: str) -> list:
 
 async def register_webhook(webhook:str, callback:str, retry=1):
     '''
-    attempts to register client to the webhook.
+    attempts to register client to the webhook. Keeps looping until successfully registered.
     '''
     result = None
 
