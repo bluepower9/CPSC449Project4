@@ -4,6 +4,11 @@ from quart import Quart, g, request
 from api.leaderboard.leaderboard import app_leaderboard
 import toml
 import logging
+import asyncio
+import os
+import socket
+from api.util.util import register_webhook
+import httpx
 
 app = Quart(__name__)
 QuartSchema(app)
@@ -15,6 +20,11 @@ app.register_blueprint(app_leaderboard)
 
 #config app here
 app.config.from_file(f'./config/config.toml', toml.load)
+
+callback = socket.getfqdn('http://' + 'localhost'+ ':' + os.environ['PORT'] + '/leaderboard/update')
+
+#register function runs until registered to webhook.  Does not start service until successfully registered.
+asyncio.run(register_webhook(app.config['WEBHOOK']['URL'], callback))
 
 
 if __name__ == '__main__':

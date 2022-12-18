@@ -5,3 +5,6 @@ URL_GAMES_PRIMARY = 'sqlite+aiosqlite:///database/dbs/games/primary/mount/games.
 [REDIS]
 HOST = 'localhost'
 PORT = 6379
+
+[WEBHOOK]
+URL = 'http://tuffix-vm/game/register'

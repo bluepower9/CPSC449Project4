@@ -27,3 +27,7 @@ class UserAuth:
 class LeaderboardGame:
     username: str
     score: int
+
+@dataclasses.dataclass
+class WebhookReg:
+    callback: str

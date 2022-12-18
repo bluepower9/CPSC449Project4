@@ -2,11 +2,13 @@ from quart import Quart, request, Blueprint, abort, g
 import random
 import dataclasses
 import uuid
-from api.util.util import CORRECT_WORD_BANK, parse_game, process_guess, validate_guess
+from api.util.util import CORRECT_WORD_BANK, parse_game, process_guess, validate_guess, _get_redis
 from api.util.util import _get_db as _getdb
-from api.util.Classes import Guess, Game, User
+from api.util.Classes import Guess, Game, User, WebhookReg
 from quart_schema import validate_request, validate_headers
 import logging
+from rq import Queue
+import httpx
 
 
 app_create = Blueprint('app_create', __name__)
@@ -149,8 +151,39 @@ async def make_guess(data:Guess, headers:User):
     elif valid and correct:
         result['correct_guess'] = correct
     
+    #queues jobs for webhook if game finished
+    if finished:
+        score = guesses_rem + 1 if correct else 0
+        redisdb = _get_redis()
+
+        #gets all urls from the redis set
+        urls = list(redisdb.smembers('webhook_callback'))
+        que = Queue(connection=redisdb)
+        
+        #queues a job for each registered url
+        for url in urls:
+            que.enqueue(httpx.post, url, json={'username':username, 'score': score})
+
     return result
 
+
+@app_create.route('/game/register', methods=['POST'])
+@validate_request(WebhookReg)
+async def register_client(data: WebhookReg):
+    '''
+    Registers a client to the webhook to listen for finished games.
+    '''
+    try:
+        db = _get_redis()
+        data = dataclasses.asdict(data)
+        
+        #adds to a set to prevent duplicate callback urls
+        db.sadd('webhook_callback', data['callback'])
+    except Exception as e:
+        print(e)
+        return {'registered': False}, 500
+
+    return {'registered': True, 'callback': data['callback']}, 200
 
     
 

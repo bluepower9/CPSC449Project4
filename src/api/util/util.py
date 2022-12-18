@@ -7,7 +7,8 @@ from api.util.Classes import Game
 from redis import Redis
 from itertools import cycle
 import toml
-
+import httpx
+import asyncio
 
 CORRECT_WORD_BANK = []
 VALID_WORD_BANK = []
@@ -21,6 +22,23 @@ def _read_jsonfile(fname: str) -> list:
         data = json.load(file)
     
     return list(data)
+
+
+async def register_webhook(webhook:str, callback:str, retry=1):
+    '''
+    attempts to register client to the webhook. Keeps looping until successfully registered.
+    '''
+    result = None
+
+    client = httpx.AsyncClient()
+    while result is None or result.status_code != 200:
+        try:
+            result = await client.post(webhook, json={'callback': callback})
+
+            if result.status_code != 200:
+                await asyncio.sleep(retry)
+        except Exception as e:
+            await asyncio.sleep(retry)
 
 
 async def _get_db(process:str):

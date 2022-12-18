@@ -7,3 +7,4 @@ redis: redis-server ./config/redis.conf
 primary: ./database/litefs -config ./config/primary.yml
 secondary: ./database/litefs -config ./config/secondary.yml
 tertiary: ./database/litefs -config ./config/tertiary.yml
+webhook-worker: rq worker --with-scheduler

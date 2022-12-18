@@ -22,6 +22,13 @@ server {
                 proxy_pass_request_body on;
         }
 
+
+        location = /game/register {
+                proxy_pass http://backend/game/register;
+                proxy_pass_request_headers on;
+                proxy_pass_request_body on;
+        }
+
         location /game/ {
                 auth_request /auth;
                 proxy_pass http://backend/game/;
